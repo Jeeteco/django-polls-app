@@ -1,7 +1,11 @@
-from polls.models import Question
-from polls.serializers import QuestionSerializer
+from polls.models import Choice, Question
+from polls.serializers import ChoiceSerializer, QuestionSerializer
 from rest_framework import generics,viewsets
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.pagination  import PageNumberPagination
 
+class QuestionPagnation( PageNumberPagination):
+    page_size=5
 
 
 class Questionlist(generics.ListCreateAPIView):
@@ -11,4 +15,13 @@ class Questionlist(generics.ListCreateAPIView):
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset=Question.objects.all()
     serializer_class=QuestionSerializer
+    permission_classes=[IsAuthenticatedOrReadOnly]
+    pagination_class=QuestionPagnation
+    
+    
+class ChoiceViewSet(viewsets.ModelViewSet):
+    queryset=Choice.objects.all()
+    serializer_class=ChoiceSerializer
+    permission_classes=[IsAuthenticatedOrReadOnly]
+  
     

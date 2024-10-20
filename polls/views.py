@@ -1,12 +1,30 @@
 
-
-from django.http import HttpResponse ,HttpResponseRedirect
+from django.core.paginator import Paginator
 from django.views import View
-from django.shortcuts import render, get_object_or_404 
-from django.urls import reverse
-
-
+from polls.forms import ContactForm
 from polls.models import Choice, Question # type: ignore
+from django.shortcuts import render, get_object_or_404 ,redirect
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+
+
+@login_required #decorater ensure user is  logged in
+
+
+
+def contact(request):
+    if request.method=='POST':
+        form=ContactForm(request.POST)
+        if form.isvalid():
+            name=form.cleaned_data['name']
+            email=form.cleaned_data['email']
+            message=form.cleaned_data['message']
+            
+            return redirect("polls:thanks")
+    else:
+        form=ContactForm()
+    return render(request,'polls/contact.html' , {'form':form})
+            
 
 # def index(request):
 #     return HttpResponse("Hello world . you're at the polls index")
@@ -15,11 +33,18 @@ from polls.models import Choice, Question # type: ignore
 # class IndexView(View):
 #     def get(self,request):
 #         return HttpResponse("Hello ,World .You are in the poools index")
-    
+
 def index(request):
-    latest_question_list=Question.objects.order_by('-pub_date')[:5]
-    context={'latest_question_list':latest_question_list}
-    return render(request, 'polls/index.html' ,context)
+    latest_question_list=Question.objects.order_by('-pub_date')
+    paginator=Paginator(latest_question_list,5)
+    page_number=request.GET.get('page')
+    page_obj=paginator.get_page(page_number)
+    return render(request, 'polls/index.html' , {'page_obj':page_obj})
+    
+# def index(request):
+#     latest_question_list=Question.objects.order_by('-pub_date')[:]
+#     context={'latest_question_list':latest_question_list}
+#     return render(request, 'polls/index.html' ,context)
 
 def detail(request,question_id):
     question=get_object_or_404(Question,pk=question_id)

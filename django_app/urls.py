@@ -16,11 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin # type: ignore
 from django.urls import path,include # type: ignore
+from django_app import views 
+
+handler404="django_app.views.handler404"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('polls/', include('polls.urls')), # type: ignore
-    path('api/',include('polls.api_urls'))
-    # path('abouts/',include('abouts.urls')),
-    # path('contacts/',include('contacts.urls'))
+    path('polls/', include('polls.urls')), 
+    path('api/',include('polls.api_urls')),
+    path('accounts/',include('accounts.urls'))
+   
 ] 

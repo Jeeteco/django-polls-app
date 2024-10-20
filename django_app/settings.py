@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url # type: ignore
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-w%k)n#dhj)e%_*r)vdcmy1q!88yu2u25@k3d6!3o&bov=m(@u$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG =True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -39,11 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "polls",
     "abouts",
-    "contacts",
-    'rest_framework'
+    'accounts',
+    'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_app.middleware.CustomHeaderMiddelware'
 ]
 
 ROOT_URLCONF = 'django_app.urls'
@@ -84,6 +88,7 @@ DATABASES = {
     }
 }
 
+DATABASES['default']=dj_database_url.parse('postgresql://django_db_hlgr_user:Yt0bVCAIocVSR7m1Z2tMIKRqvoOxUzGb@dpg-csaa3iqj1k6c73cnel00-a.singapore-postgres.render.com/django_db_hlgr')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -102,6 +107,31 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+#Login url
+LOGIN_URL='/accounts/login/'
+LOGIN_REDIRECT_URL='polls:index'
+LOGIN_REDIRECT_URL='polls:index'
+
+REST_FRAMEWORK={
+    'DEFAULT_PERMISSION_CLASSES':[
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ]
+        
+        
+}
+
+
+CORS_ALLOWED_ORIGINS=[
+    "http://localhost:3000",
+]
+
+# CORS_ALLOW_ALL_ORIGINS=True
 
 
 # Internationalization
@@ -125,3 +155,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
